@@ -16,7 +16,7 @@ app.use(express.static("public"));
 
 //Templating Engine
 app.use(expressLayouts);
-app.set("layout", "./layout/main");
+app.set("layout", "./layouts/main");
 app.set("view engine", "ejs");
 
 //Routes
