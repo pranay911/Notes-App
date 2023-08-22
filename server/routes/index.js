@@ -8,6 +8,10 @@ App Routes
 
 */
 
+// Home page
 router.get("/", mainController.homepage);
+
+//about page
+router.get("/about", mainController.about);
 
 module.exports = router;
