@@ -21,7 +21,11 @@ app.set("view engine", "ejs");
 
 //Routes
 app.get("/", (req, res) => {
-  res.render("index");
+  const locals = {
+    title: "Notes-App",
+    description: "Notes taking app Using node js",
+  };
+  res.render("index", locals);
 });
 
 app.listen(port, (req, res) => {
