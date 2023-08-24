@@ -70,3 +70,28 @@ h6 {
   --bs-paginatiom-active-bg: var(--bs-primary-rgb);
   --bs-paginatiom-active-border-color: var(--bs-primary-rgb);
 }
+/* Home */
+
+@media(min-width:1200px){
+  .home{
+    background: url("../img/") left bottom no-repeat,
+    url("../img/") right bottom no-repeat,
+    url("../img/") left top repeat,
+    var(--background-color)
+
+  }
+}
+.home {
+}
+.home-title::before {
+  content: url("../img/stars.svg");
+  position: absolute;
+  left: -50px;
+  top: -30px;
+}
+.home-title::after {
+  content: url("../img/stars.svg");
+  position: absolute;
+  right: -50px;
+  bottom: -30px;
+}
