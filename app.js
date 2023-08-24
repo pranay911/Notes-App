@@ -9,6 +9,17 @@ const MongoStrore = require("connect-mongo");
 const app = express();
 const port = 5000 || process.env.PORT;
 
+app.use(
+  session({
+    secret: "notes-session",
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStrore.create({
+      mongoUrl: process.env.MONGODB_URI,
+    }),
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -30,6 +41,7 @@ app.set("view engine", "ejs");
 //Routes
 app.use("/", require("./server/routes/index"));
 app.use("/", require("./server/routes/dashboard"));
+app.use("/", require("./server/routes/auth"));
 
 // Handle 404
 app.get("*", function (Req, res) {
