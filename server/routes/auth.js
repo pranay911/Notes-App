@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20");
+const User = require("../models/User");
 
 passport.use(
   new GoogleStrategy(
@@ -12,8 +13,26 @@ passport.use(
       scope: ["profile"],
       state: true,
     },
-    function (accessToken, refreshToken, profile, cb) {
-      console.log(profile);
+    async function (accessToken, refreshToken, profile, done) {
+      const newUser = {
+        googleId: profile.id,
+        displayName: profile.displayName,
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName,
+        profileImage: profile.photos[0].value,
+      };
+      try {
+        //Existing User
+        let user = await User.findOne({ googleId: profile.id });
+        if (user) {
+          done(null, user);
+        } else {
+          user = await User.create(newUser);
+          done(null, user);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   )
 );
@@ -37,18 +56,22 @@ router.get("/login-failure", (req, res) => {
   res.send("Something went wrong");
 });
 
-//Persists user data after successful autentication
-
+// Presist user data after successful authentication
 passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-//Retrieve user data from session
-
-passport.serializeUser(function (id, done) {
-  User.FindById(id, function (err, user) {
-    done(err, user);
+  process.nextTick(function () {
+    return done(null, {
+      id: user.id,
+    });
   });
 });
 
+// Retrieve user data from session.
+passport.deserializeUser(function (id, done) {
+  process.nextTick(function () {
+    // User.findById(id, function (err, user) {
+    //   return done(err, user);
+    // });
+    return done(null, id);
+  });
+});
 module.exports = router;
