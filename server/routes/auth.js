@@ -66,6 +66,18 @@ passport.serializeUser(function (user, done) {
   });
 });
 
+//Destroy user session
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      res.send("Error logging out");
+    } else {
+      res.redirect("/");
+    }
+  });
+});
+
 // Retrieve user data from session.
 passport.deserializeUser(async function (id, done) {
   try {
