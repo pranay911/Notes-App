@@ -79,14 +79,13 @@ router.get("/logout", (req, res) => {
 });
 
 // Retrieve user data from session.
-passport.deserializeUser(async function (id, done) {
+passport.deserializeUser(async (id, done) => {
   try {
-    const user = User.findById(id);
-    return done(null, user);
+    const user = await User.findById(id);
+    done(null, user);
   } catch (err) {
-    console.log(err);
+    done(err, null);
   }
-  return done(null, id);
 });
 
 module.exports = router;
