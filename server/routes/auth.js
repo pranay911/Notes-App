@@ -28,6 +28,7 @@ passport.use(
           done(null, user);
         } else {
           user = await User.create(newUser);
+          console.log("User Added in DB");
           done(null, user);
         }
       } catch (err) {
@@ -66,12 +67,14 @@ passport.serializeUser(function (user, done) {
 });
 
 // Retrieve user data from session.
-passport.deserializeUser(function (id, done) {
-  process.nextTick(function () {
-    // User.findById(id, function (err, user) {
-    //   return done(err, user);
-    // });
-    return done(null, id);
-  });
+passport.deserializeUser(async function (id, done) {
+  try {
+    const user = User.findById(id);
+    return done(null, user);
+  } catch (err) {
+    console.log(err);
+  }
+  return done(null, id);
 });
+
 module.exports = router;
