@@ -67,6 +67,11 @@ exports.dashboardViewNote = async (req, res) => {
   }
 };
 
+/**
+ * PUT /
+ * Update Specific Note
+ */
+
 exports.dashboardUpdateNote = async (req, res) => {
   try {
     await Note.findOneAndUpdate(
@@ -79,5 +84,19 @@ exports.dashboardUpdateNote = async (req, res) => {
     res.redirect("/dashboard");
   } catch (err) {
     console.log(err);
+  }
+};
+
+/**
+ * DELETE /
+ * delete Specific Note
+ */
+
+exports.dashboardDeletNote = async (req, res) => {
+  try {
+    await Note.deleteOne({ _id: req.params.id }).where({ user: req.user.id });
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.log(error);
   }
 };
