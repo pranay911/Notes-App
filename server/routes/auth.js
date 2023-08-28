@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/User");
 
 passport.use(
@@ -10,8 +10,6 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
-      scope: ["profile"],
-      state: true,
     },
     async function (accessToken, refreshToken, profile, done) {
       const newUser = {
@@ -21,18 +19,17 @@ passport.use(
         lastName: profile.name.familyName,
         profileImage: profile.photos[0].value,
       };
+
       try {
-        //Existing User
         let user = await User.findOne({ googleId: profile.id });
         if (user) {
           done(null, user);
         } else {
           user = await User.create(newUser);
-          console.log("User Added in DB");
           done(null, user);
         }
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
       }
     }
   )
@@ -52,40 +49,35 @@ router.get(
     successRedirect: "/dashboard",
   })
 );
-//Route if something goes wrong
+
+// Route if something goes wrong
 router.get("/login-failure", (req, res) => {
-  res.send("Something went wrong");
+  res.send("Something went wrong...");
 });
 
-// Presist user data after successful authentication
-passport.serializeUser(function (user, done) {
-  process.nextTick(function () {
-    return done(null, {
-      id: user.id,
-    });
-  });
-});
-
-//Destroy user session
+// Destroy user session
 router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-      res.send("Error logging out");
+  req.session.destroy((error) => {
+    if (error) {
+      console.log(error);
+      res.send("Error loggin out");
     } else {
       res.redirect("/");
     }
   });
 });
 
+// Presist user data after successful authentication
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
+});
+
 // Retrieve user data from session.
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-    console.log(user);
     done(null, user);
   } catch (err) {
-    console.log(err);
     done(err, null);
   }
 });

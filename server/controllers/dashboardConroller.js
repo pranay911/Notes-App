@@ -1,13 +1,12 @@
-const Note = require("../models/Notes");
-const mongoose = require("mongoose");
-const User = require("../models/User");
-
 /**
  * GET /
  * Dashboard
  */
+const Note = require("../models/Notes");
+const mongoose = require("mongoose");
+
 exports.dashboard = async (req, res) => {
-  let perPage = 12;
+  let perPage = 4;
   let page = req.query.page || 1;
 
   const locals = {
@@ -16,16 +15,9 @@ exports.dashboard = async (req, res) => {
   };
 
   try {
-    // Mongoose "^7.0.0 Update
-
-    // if (!mongoose.Types.ObjectId.isValid(req.user.id.trim())) {
-    //   return res.send("Invalid User Id");
-    // }
-
-    const userId = new mongoose.Types.ObjectId(req.user.id);
     const notes = await Note.aggregate([
       { $sort: { updatedAt: -1 } },
-      { $match: { user: userId } },
+      { $match: { user: new mongoose.Types.ObjectId(req.user.id) } },
       {
         $project: {
           title: { $substr: ["$title", 0, 30] },
@@ -36,8 +28,8 @@ exports.dashboard = async (req, res) => {
       .skip(perPage * page - perPage)
       .limit(perPage)
       .exec();
-    console.log(notes);
-    const count = await Note.count({ user: userId });
+
+    const count = await Note.count();
 
     res.render("dashboard/index", {
       userName: req.user.firstName,
