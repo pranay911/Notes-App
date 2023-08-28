@@ -116,11 +116,56 @@ exports.dashboardAddNote = async (req, res) => {
  * POST /
  * ADD Notes
  */
+
 exports.dashboardAddNoteSubmit = async (req, res) => {
   try {
+    //flash messages
     req.body.user = req.user.id;
     await Note.create(req.body);
     res.redirect("/dashboard");
+    console.log("Note Added");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/**
+ * GET /
+ * SEARCH for Notes
+ */
+
+exports.dashboardSearch = async (req, res) => {
+  try {
+    res.render("dashboard/search", {
+      searchResults: "",
+      layout: "../views/layouts/dashboard",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/**
+ * POST /
+ * SEARCH for Notes
+ */
+
+exports.dashboardSearchSubmit = async (req, res) => {
+  try {
+    let searchTerm = req.body.searchTerm;
+    const searchNoSpecialChars = searchTerm.replace(/[^a-zA-Z0-9 ]/g, "");
+
+    const searchResults = await Note.find({
+      $or: [
+        { title: { $regex: new RegExp(searchNoSpecialChars, "i") } },
+        { body: { $regex: new RegExp(searchNoSpecialChars, "i") } },
+      ],
+    }).where({ user: req.user.id });
+
+    res.render("dashboard/search", {
+      searchResults,
+      layout: "../views/layouts/dashboard",
+    });
   } catch (error) {
     console.log(error);
   }
