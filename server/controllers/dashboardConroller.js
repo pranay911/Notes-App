@@ -92,9 +92,34 @@ exports.dashboardUpdateNote = async (req, res) => {
  * delete Specific Note
  */
 
-exports.dashboardDeletNote = async (req, res) => {
+exports.dashboardDeleteNote = async (req, res) => {
   try {
     await Note.deleteOne({ _id: req.params.id }).where({ user: req.user.id });
+    res.redirect("/dashboard");
+    console.log("deleted");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/**
+ * GET /
+ * ADD Notes
+ */
+exports.dashboardAddNote = async (req, res) => {
+  res.render("dashboard/add", {
+    layout: "../views/layouts/dashboard",
+  });
+};
+
+/**
+ * POST /
+ * ADD Notes
+ */
+exports.dashboardAddNoteSubmit = async (req, res) => {
+  try {
+    req.body.user = req.user.id;
+    await Note.create(req.body);
     res.redirect("/dashboard");
   } catch (error) {
     console.log(error);
