@@ -82,8 +82,10 @@ router.get("/logout", (req, res) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
+    console.log(user);
     done(null, user);
   } catch (err) {
+    console.log(err);
     done(err, null);
   }
 });

@@ -1,5 +1,6 @@
 const Note = require("../models/Notes");
 const mongoose = require("mongoose");
+const User = require("../models/User");
 
 /**
  * GET /
@@ -16,9 +17,15 @@ exports.dashboard = async (req, res) => {
 
   try {
     // Mongoose "^7.0.0 Update
+
+    // if (!mongoose.Types.ObjectId.isValid(req.user.id.trim())) {
+    //   return res.send("Invalid User Id");
+    // }
+
+    const userId = new mongoose.Types.ObjectId(req.user.id);
     const notes = await Note.aggregate([
       { $sort: { updatedAt: -1 } },
-      { $match: { user: new mongoose.Types.ObjectId(req.user.id) } },
+      { $match: { user: userId } },
       {
         $project: {
           title: { $substr: ["$title", 0, 30] },
@@ -29,8 +36,8 @@ exports.dashboard = async (req, res) => {
       .skip(perPage * page - perPage)
       .limit(perPage)
       .exec();
-
-    const count = await Note.count();
+    console.log(notes);
+    const count = await Note.count({ user: userId });
 
     res.render("dashboard/index", {
       userName: req.user.firstName,
