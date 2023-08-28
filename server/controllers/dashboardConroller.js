@@ -43,3 +43,30 @@ exports.dashboard = async (req, res) => {
     console.log(error);
   }
 };
+
+/**
+ * GET /
+ * View Specific Note
+ */
+
+exports.dashboardViewNote = async (req, res) => {
+  //get notes by id
+  const note = await Note.findById({ _id: req.params.id })
+    .where({ user: req.user.id })
+    .lean();
+  console.log(note);
+
+  if (note) {
+    res.render("dashboard/view-notes", {
+      noteID: req.params.id,
+      note,
+      layout: "../views/layouts/dashboard",
+    });
+  } else {
+    res.send("Something went wrong!!");
+  }
+};
+
+exports.dashboardUpdateNote = async (req, res) => {
+  
+};

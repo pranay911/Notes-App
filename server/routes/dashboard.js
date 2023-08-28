@@ -11,4 +11,15 @@ Get Dashboard Page
 
 router.get("/dashboard", isLoggedIn, dashboardController.dashboard);
 
+router.get(
+  "/dashboard/item/:id",
+  isLoggedIn,
+  dashboardController.dashboardViewNote
+);
+// router.post(
+//   "/dashboard/item/:id",
+//   isLoggedIn,
+//   dashboardController.dashboardUpdateNote
+// );
+
 module.exports = router;

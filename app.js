@@ -3,6 +3,7 @@ const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const connectDB = require("./server/config/db");
 const session = require("express-session");
+const methodOverride = require("method-override");
 const passport = require("passport");
 const MongoStrore = require("connect-mongo");
 
@@ -27,7 +28,7 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
-
+app.use(methodOverride("_method"));
 //Database connection
 connectDB();
 
